@@ -4,6 +4,13 @@ import os
 from skimage import io
 from random import shuffle
 from dataset import transforms as mytransforms
+'''
+Skripta za pripremanje slika.
+Slike se nadopunjuju na velicinu 320x320, razvrstavaju se na
+slike za treniranje, test i validaciju. Od slika za treniranje
+se rade nove slike nizom transformacija (random crop, random horizotnal flip
+random vertical flip, color jitter)
+'''
 
 
 def __read_lines(root_dir, dataset_info_file):
@@ -164,3 +171,4 @@ def __geninfofile(save_dir, img_list):
 if __name__ == '__main__':
     train, val, test = data_separation('./data', 'horizons.txt', (0.64, 0.16, 0.20))
     data_augmentation('./data', train)
+
