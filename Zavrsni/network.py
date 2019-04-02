@@ -8,7 +8,7 @@ def fast_up_convolution(input_data, out_channels, ReLU=False):
     # Dimension labels - HxW
     # Input dimensions - NxCxHxW
 
-    in_channels = input_data[1]
+    in_channels = input_data.shape[1]
 
     # A Convolution - 3x3
     convA = nn.Conv2d(in_channels, out_channels, kernel_size=(3, 3), stride=1, padding=(1, 1))
@@ -32,19 +32,18 @@ def fast_up_convolution(input_data, out_channels, ReLU=False):
     # Interleaving ABCD feature maps
     outputAB = interleave([outputA, outputB], dim=2)
     outputCD = interleave([outputC, outputD], dim=2)
-    outputABCD = interleave([outputAB, outputCD], dim=3, transpose=True)
+    outputABCD = interleave([outputAB, outputCD], dim=3)
 
     if ReLU:
         outputABCD = F.relu(outputABCD)
-    
+
     return outputABCD
 
 
-def interleave(tensors, dim, transpose=False):
+def interleave(tensors, dim):
     shape = list(tensors[0].shape)[1:]
     reshape = [-1] + shape
     reshape[dim] *= len(tensors)
     result = torch.reshape(torch.stack(tensors, dim=dim + 1), reshape)
-    if transpose:
-        result = result.transpose(2, 3)
     return result
+

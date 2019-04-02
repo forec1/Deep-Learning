@@ -14,6 +14,10 @@ outputCD = network.interleave([ct, dt], dim=2)
 print('outputCD:')
 print(outputCD)
 
-outputABCD = network.interleave([outputAB, outputCD], dim=3, transpose=True)
+outputABCD = network.interleave([outputAB, outputCD], dim=3)
 print('outputABCD:')
 print(outputABCD)
+
+test_tensor = torch.ones((1, 256, 40, 32))  # NxCxHxW
+test_result = network.fast_up_convolution(test_tensor, 128)
+print('test result: ', test_result.shape)
