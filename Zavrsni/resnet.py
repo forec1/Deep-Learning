@@ -1,6 +1,8 @@
 import torch.nn as nn
-import torch
+import torch.nn.functional as F
+import torch.utils.model_zoo as model_zoo
 
+MODEL_URL = 'https://download.pytorch.org/models/resnet50-19c8e357.pth'
 
 def conv3x3(in_planes, out_planes, stride=1):
     """3x3 convolution with padding"""
@@ -51,9 +53,19 @@ class Bottleneck(nn.Module):
         return out
 
 
+class BilinearUpsampling2d(nn.Module):
+
+    def __init__(self, size):
+        super(BilinearUpsampling2d, self).__init__()
+        self.size = size
+
+    def forward(self, x):
+        return F.interpolate(x, size=self.size, mode='bilinear', align_corners=False)
+
+
 class MyResNet(nn.Module):
 
-    def __init__(self, block, layers, num_classes=9, zero_init_residual=False):
+    def __init__(self, block, layers, num_classes=1000, zero_init_residual=False):
         super(MyResNet, self).__init__()
         self.inplanes = 64
         self.conv1 = nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3,
@@ -65,10 +77,8 @@ class MyResNet(nn.Module):
         self.layer2 = self._make_layer(block, 128, layers[1], stride=2)
         self.layer3 = self._make_layer(block, 256, layers[2], stride=2)
         self.layer4 = self._make_layer(block, 512, layers[3], stride=2)
-        self.conv2 = nn.Conv2d(512 * block.expansion, num_classes, stride=1, kernel_size=1)
-        # svaki filter govori koliko pojedini piksel u tom filteru pripada toj klasi
-        self.upsampling = nn.UpsamplingBilinear2d((320, 320))
-
+        self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
+        self.fc = nn.Linear(512 * block.expansion, num_classes)
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
@@ -112,14 +122,29 @@ class MyResNet(nn.Module):
         x = self.layer3(x)
         x = self.layer4(x)
 
-#        x = self.avgpool(x)
-#        x = x.view(x.size(0), -1)
-#        x = self.fc(x)
-        x = self.conv2(x)
-        x = self.upsampling(x)
+        x = self.fc(x)
 
         return x.float()
 
 
-def resnet50():
-    return MyResNet(Bottleneck, [3, 4, 6, 3])
+class PassThrough(nn.Module):
+
+    def forward(self, x):
+        return x
+
+
+def resnet50(last_layer, pretrained=False):
+    net = MyResNet(Bottleneck, [3, 4, 6, 3])
+
+    if pretrained:
+        net.load_state_dict(model_zoo.load_url(MODEL_URL))
+
+    if last_layer:
+        conv2 = nn.Conv2d(512 * Bottleneck.expansion, 9, stride=1, kernel_size=1)
+        # svaki filter govori koliko pojedini piksel u tom filteru pripada toj klasi
+        upsampling = BilinearUpsampling2d((320, 320))
+        net.fc = nn.Sequential(conv2, upsampling)
+    else:
+        net.fc = PassThrough()
+    return net
+

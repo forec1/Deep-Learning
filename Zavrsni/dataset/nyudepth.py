@@ -14,7 +14,6 @@ class NYUDepthV2Dataset(data.Dataset):
 
         image = self.file['images'][index]
         depth = self.file['depths'][index]
-
         sample = {'image': image, 'depth': depth}
 
         if self.transform:

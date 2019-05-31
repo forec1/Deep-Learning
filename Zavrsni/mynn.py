@@ -29,8 +29,12 @@ class MyNet(nn.Module):
         self.in_channels = out_channels
         self.upsamling_layers = self._make_upsample(block, n_upsampling_blocks)
 
+        self.dropout = nn.Dropout2d()
+
         # Last convolutional layer
         self.conv3x3 = nn.Conv2d(self.in_channels, 1, kernel_size=(3, 3), stride=1, padding=(1, 1))
+        torch.nn.init.normal_(self.conv3x3.weight, mean=0.0, std=0.01)
+        torch.nn.init.normal_(self.conv3x3.bias, mean=0.0, std=0.01)
 
     def _make_upsample(self, block, n_upsampling_blocks):
         layers = []
@@ -51,6 +55,7 @@ class MyNet(nn.Module):
 
         x = self.entrance(x)
         x = self.upsamling_layers(x)
+        x = self.dropout(x)
         x = self.conv3x3(x)
         x = F.relu(x)
 
@@ -64,9 +69,22 @@ class FastUpConvolution(nn.Module):
 
         # zero padding - adds 2 to W and 2 to H
         self.convA = nn.Conv2d(in_channels, out_channels, kernel_size=(3, 3), stride=1, padding=(1, 1))
+        torch.nn.init.normal_(self.convA.weight, mean=0.0, std=0.01)
+        torch.nn.init.normal_(self.convA.bias, mean=0.0, std=0.01)
+
         self.convB = nn.Conv2d(in_channels, out_channels, kernel_size=(3, 2), stride=1)
+        torch.nn.init.normal_(self.convB.weight, mean=0.0, std=0.01)
+        torch.nn.init.normal_(self.convB.bias, mean=0.0, std=0.01)
+
         self.convC = nn.Conv2d(in_channels, out_channels, kernel_size=(2, 3), stride=1)
+        torch.nn.init.normal_(self.convC.weight, mean=0.0, std=0.01)
+        torch.nn.init.normal_(self.convC.bias, mean=0.0, std=0.01)
+
         self.convD = nn.Conv2d(in_channels, out_channels, kernel_size=(2, 2), stride=1)
+        torch.nn.init.normal_(self.convD.weight, mean=0.0, std=0.01)
+        torch.nn.init.normal_(self.convD.bias, mean=0.0, std=0.01)
+
+        self.batch_norm = nn.BatchNorm2d(out_channels, momentum=0.999, eps=0.00001)
 
     def forward(self, input_data, apply_relu=False):
         # Dimension labels - HxW
@@ -88,9 +106,12 @@ class FastUpConvolution(nn.Module):
         outputD = self.convD(input_dataD)
 
         # Interleaving ABCD feature maps
-        outputAB = interleave([outputA, outputB], dim=2)  # dim=2 -> H
-        outputCD = interleave([outputC, outputD], dim=2)
-        outputABCD = interleave([outputAB, outputCD], dim=3)  # dim=3 -> W
+        outputAB = interleave([outputA, outputB], dim=3)  # dim=2 -> W
+        outputCD = interleave([outputC, outputD], dim=3)
+        outputABCD = interleave([outputAB, outputCD], dim=2)  # dim=3 -> H
+
+        # outputABCD = self.batch_norm(outputABCD)
+        # outputABCD = F.relu(outputABCD)
 
         if apply_relu:
             outputABCD = F.relu(outputABCD)
@@ -105,6 +126,11 @@ class FastUpProjection(nn.Module):
 
         # Adds padding to the input data on the left and right to keep same dimensions
         self.conv3x3 = nn.Conv2d(out_channels, out_channels, kernel_size=(3, 3), stride=1, padding=(1, 1))
+        torch.nn.init.normal_(self.conv3x3.weight, mean=0.0, std=0.01)
+        torch.nn.init.normal_(self.conv3x3.bias, mean=0.0, std=0.01)
+
+        self.batch_norm = nn.BatchNorm2d(out_channels, momentum=0.999, eps=0.00001)
+
         self.fast_up_conv_up = FastUpConvolution(in_channels, out_channels)
 
         self.fast_up_conv_down = FastUpConvolution(in_channels, out_channels)
@@ -112,6 +138,8 @@ class FastUpProjection(nn.Module):
     def forward(self, input_data):
         up_branch = self.fast_up_conv_up(input_data, apply_relu=True)
         up_branch = self.conv3x3(up_branch)
+        # up_branch = self.batch_norm(up_branch)
+        # up_branch = F.relu(up_branch)
 
         down_branch = self.fast_up_conv_down(input_data, apply_relu=False)
 
