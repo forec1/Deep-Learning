@@ -274,6 +274,24 @@ Kako bi se moglo ostvariti učenje, potrebno je definirati funkciju gubitka,
 koja ovisi o parametrima $\pmb{\theta}$, tj. o težinama $\vec{W}$ i pomacima
 $\vec{b}$. Kao i prijenosna funkcija, funkcija gubitka se može definirati
 na više načina.
+\\\indent Najčešće funckije gubitka za regresijske probleme su $\mathcal{L}_1$ i
+$\mathcal{L}_2$ funckije gubitka. Definirane su sljedećim izrazima:
+\begin{align}
+	\mathcal{L}_1 &= \sum_{i=0}^{n}|y_i - \hat{y_i}| \\
+	\mathcal{L}_2 &= \sum_{i=0}^{n}(y_i - \hat{y_i})^2
+\end{align}
+gdje $y_i$ predstavlja ispravnu vrijednost, $\hat{y_i}=f(\vec{x})$ procijenjenu 
+vrijednost, a $n$ broj podataka. 
+\\\indent Za probleme klasifikacije se $\mathcal{L}_1$ i $\mathcal{L}_2$ 
+funkcije gubitka ne koriste toliko često.
+Za ovaj problem se pretežito koristi unakrsna entropija (engl. \textit{cross-
+entropy loss}). Definirana je izrazom \ref{eq:cross}.
+\begin{equation}
+	\mathcal{L}_{CE} = -\sum_{i=0}^n y_i \cdot log(\hat{y_i})
+	\label{eq:cross}
+\end{equation}
+
+\subsection{Gradijentni spust}
 
 \chapter{Konvolucijska neuronska mreža}
 
