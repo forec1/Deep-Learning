@@ -6,6 +6,7 @@
 \BOOKMARK [1][-]{section.2.3}{Ucenje umjetne neuronske mre\236e}{chapter.2}% 6
 \BOOKMARK [2][-]{subsection.2.3.1}{Funkcija gubitka}{section.2.3}% 7
 \BOOKMARK [2][-]{subsection.2.3.2}{Gradijentni spust}{section.2.3}% 8
-\BOOKMARK [0][-]{chapter.3}{Konvolucijska neuronska mre\236a}{}% 9
-\BOOKMARK [0][-]{chapter.4}{Zakljucak}{}% 10
-\BOOKMARK [0][-]{chapter*.8}{Literatura}{}% 11
+\BOOKMARK [2][-]{subsection.2.3.3}{Propagacija pogre\235ke unatrag}{section.2.3}% 9
+\BOOKMARK [0][-]{chapter.3}{Konvolucijska neuronska mre\236a}{}% 10
+\BOOKMARK [0][-]{chapter.4}{Zakljucak}{}% 11
+\BOOKMARK [0][-]{chapter*.8}{Literatura}{}% 12

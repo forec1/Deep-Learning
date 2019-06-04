@@ -154,7 +154,7 @@ grafu funkcije prikazanom na slici \ref{fig:sig_fun}.
 \begin{figure}[htb]
 	\centering
 	\includegraphics[scale=0.35]{sig_fun.png}
-	\caption{Sigmoidalna funckija}
+	\caption{Sigmoidalna funkcija}
 	\label{fig:sig_fun}
 \end{figure}
 
@@ -267,15 +267,15 @@ neuronskoj mreži. Svaki uzorak je par koji se sastoji od ulaza u mrežu i
 \textit{supervised learning}).
 \\\indent
 Kako bi odredili koliko dobro mreža aproksimira ciljnu funkciju koristimo
-funkciju gubitka. Minimiziranjem funkcije gubitka neuronska mreža se uči.
+funkciju gubitka. Optimiziranjem funkcije gubitka neuronska mreža se uči.
 
 \subsection{Funkcija gubitka}
 Kako bi se moglo ostvariti učenje, potrebno je definirati funkciju gubitka,
 koja ovisi o parametrima $\pmb{\theta}$, tj. o težinama $\vec{W}$ i pomacima
 $\vec{b}$. Kao i prijenosna funkcija, funkcija gubitka se može definirati
 na više načina.
-\\\indent Najčešće funckije gubitka za regresijske probleme su $\mathcal{L}_1$ i
-$\mathcal{L}_2$ funckije gubitka. Definirane su sljedećim izrazima:
+\\\indent Najčešće funkcije gubitka za regresijske probleme su $\mathcal{L}_1$ i
+$\mathcal{L}_2$ funkcije gubitka. Definirane su sljedećim izrazima:
 \begin{align}
 	\mathcal{L}_1 &= \sum_{i=0}^{n}|y_i - \hat{y_i}| \\
 	\mathcal{L}_2 &= \sum_{i=0}^{n}(y_i - \hat{y_i})^2
@@ -292,7 +292,73 @@ entropy loss}). Definirana je izrazom \ref{eq:cross}.
 \end{equation}
 
 \subsection{Gradijentni spust}
+Optimiziranjem funkcije gubitka parametri neuronske mreže se "štimaju" i mreža 
+uči. Za optimiziranje funkcije gubitka koristi se gradijentni spust.
+To je iterativni optimizacijski algoritam za pronalaženje minimuma funkcije.
+\\\indent Ako je funkcija $y = f({x})$, gdje su $x$ i $y$ realni brojevi, 
+funkcija koja se optimizira, onda je derivacija te funkcije 
+$f'(x) = \frac{dy}{dx}$. Tada je aproksimacija funkcije $f(x)$ Taylorovim 
+razvojem prvog reda:
+\begin{equation}
+	f(x+\Delta x) \approx f(x) + f'(x)\cdot \Delta x
+\end{equation}
+Ako se u tu aproksimaciju uvrsti pomak u smjeru gdje funkcija pada, odnosno u
+smjeru negativne derivacije dobiva se:
+\begin{equation}
+	f(x -\epsilon \cdot sign(f'(x))) \approx f(x) - f'(x)\cdot\epsilon \cdot 
+	sign(f'(x))
+\end{equation}
+Vidi se da je $f(x -\epsilon \cdot sign(f'(x)))$ manje od $f(x)$ za dovoljno
+mali $\epsilon$. Dakle, ako se $x$ iterativno pomiče malim koracima sa
+suprotnim predznakom derivacije, može se doći do minimuma funkcije.
+\\\indent Za funkcije više varijabli koriste se parcijalne derivacije i 
+gradijent funkcije. Parcijalna derivacija $\frac{\partial}{\partial x_i}
+f(\vec{x})$ određuje koliko se $f$ promijeni ako se jedino $x_i$ poveća u 
+točki $\vec{x}$. Gradijent funkcije $\nabla f(\vec{x})$ je vektor koji 
+sadrži sve parcijalne derivacije funkcije. Dan je izrazom \ref{eq:grad}.
+\begin{equation}
+	\nabla f(\vec{x}) = \bigg[\frac{\partial f}{\partial x_1},
+	\frac{\partial f}{\partial x_2}, \cdots ,
+	\frac{\partial f}{\partial x_n}\bigg]
+	\label{eq:grad}
+\end{equation}
+Aproksimacija funkcije više varijabli Taylorovim razvojem prvog reda je dana
+sljedećim izrazom:
+\begin{equation}
+	f(\vec{x} + \Delta \vec{x}) \approx f(\vec{x}) + \nabla f(\vec{x})^\top
+	\Delta \vec{x}
+\end{equation}
+Ako se u danu aproksimaciju uvrsti pomak u smjeru najbržeg pada funkcije, 
+odnosno u smjeru negativnog gradijenta funkcije dobiva se:
+\begin{equation}
+	f(\vec{x} - \epsilon \cdot \nabla f(\vec{x}) \approx f(\vec{x}) - \epsilon
+	\cdot \nabla f(\vec{x})^\top \nabla f(\vec{x})
+\end{equation}
+gdje $\epsilon$ predstavlja mali pozitivan parametar koji se češće zove
+korak učenja. Kako je $\nabla f(\vec{x})^\top \nabla f(\vec{x}) \geq 0$,
+funkcija $f(\vec{x})$ će se smanjivati sve dok ne dođe do minimuma gdje je
+$\nabla f(\vec{x}) = \vec{0}$. Za sljedeću iteraciju $\vec{x}$ se ažurira 
+izrazom \ref{eq:x_upd} i postupak se ponavlja za točku $\vec{x}'$.
+\begin{equation}
+	\vec{x}' = \vec{x} - \epsilon\cdot \nabla f(\vec{x})
+	\label{eq:x_upd}
+\end{equation}
+\indent Svakim korakom
+gradijentnog spusta ažuriraju se parametri neuronske mreže izrazima:
+\begin{align}
+	\vec{w}' &= \vec{w} - \epsilon \cdot \nabla_\vec{w} \mathcal{L}(\vec{w}, 
+	\vec{b}) \\
+	\vec{b}' &= \vec{b} - \epsilon \cdot \nabla_\vec{b} \mathcal{L}(\vec{w}, 
+	\vec{b})
+\end{align}
+\indent Ako je skup podatak za učenje velik, računanje gradijenta za sve podatke
+odjednom može biti sporo. Postupak se može ubrzati korištenjem stohastičkog
+gradijentnog spusta. Korak gradijentnog spusta se računa samo za dio skupa za 
+učenje (engl. \textit{batch}). Prolazak kroz cijeli skup za učenje naziva se 
+epoha. Ovaj način također omogućava i bolje izbjegavanje lokalnih minimuma.
 
+\subsection{Propagacija pogreške unatrag}
+Backprop 
 \chapter{Konvolucijska neuronska mreža}
 
 \chapter{Zaključak}

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2018.11.7)  4 JUN 2019 13:47
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2018.11.7)  4 JUN 2019 18:17
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -882,7 +882,7 @@ Poglavlje 1.
 Poglavlje 2.
 LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <17.28> not available
 (Font)              Font shape `T1/ptm/b/n' tried instead on input line 77.
-<./images/moj_umjetni_neuron.pdf, id=85, 845.04686pt x 597.50786pt>
+<./images/moj_umjetni_neuron.pdf, id=95, 845.04686pt x 597.50786pt>
 File: ./images/moj_umjetni_neuron.pdf Graphic file (type pdf)
 <use ./images/moj_umjetni_neuron.pdf>
 Package pdftex.def Info: ./images/moj_umjetni_neuron.pdf  used on input line 83
@@ -893,30 +893,30 @@ LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <10.95> not available
 [2
 
  <./images/moj_umjetni_neuron.pdf>]
-<./images/step_fun.png, id=103, 616.3025pt x 451.6875pt>
+<./images/step_fun.png, id=113, 616.3025pt x 451.6875pt>
 File: ./images/step_fun.png Graphic file (type png)
 <use ./images/step_fun.png>
 Package pdftex.def Info: ./images/step_fun.png  used on input line 135.
 (pdftex.def)             Requested size: 215.7091pt x 158.09299pt.
  [3]
-<./images/sig_fun.png, id=120, 601.24625pt x 450.68375pt>
+<./images/sig_fun.png, id=130, 601.24625pt x 450.68375pt>
 File: ./images/sig_fun.png Graphic file (type png)
 <use ./images/sig_fun.png>
 Package pdftex.def Info: ./images/sig_fun.png  used on input line 156.
 (pdftex.def)             Requested size: 210.43933pt x 157.74167pt.
  [4 <./images/step_fun.png> <./images/sig_fun.png>]
-<./images/tanh_fun.png, id=134, 625.33624pt x 458.71375pt>
+<./images/tanh_fun.png, id=144, 625.33624pt x 458.71375pt>
 File: ./images/tanh_fun.png Graphic file (type png)
 <use ./images/tanh_fun.png>
 Package pdftex.def Info: ./images/tanh_fun.png  used on input line 190.
 (pdftex.def)             Requested size: 218.87096pt x 160.55222pt.
-<./images/relu_fun.png, id=137, 600.2425pt x 447.6725pt>
+<./images/relu_fun.png, id=147, 600.2425pt x 447.6725pt>
 File: ./images/relu_fun.png Graphic file (type png)
 <use ./images/relu_fun.png>
 Package pdftex.def Info: ./images/relu_fun.png  used on input line 205.
 (pdftex.def)             Requested size: 210.08801pt x 156.68771pt.
  [5 <./images/tanh_fun.png>]
-<./images/ann.pdf, id=151, 574.7457pt x 290.21811pt>
+<./images/ann.pdf, id=162, 574.7457pt x 290.21811pt>
 File: ./images/ann.pdf Graphic file (type pdf)
 <use ./images/ann.pdf>
 Package pdftex.def Info: ./images/ann.pdf  used on input line 234.
@@ -927,44 +927,37 @@ Package hyperref Warning: Composite letter `\textasciicaron+c'
 (hyperref)                not defined in PD1 encoding,
 (hyperref)                removing `\textasciicaron' on input line 261.
 
-[7] [8]
+[7] [8] [9]
 Poglavlje 3.
-[9
+[10
 
 ]
 Poglavlje 4.
 
 Package hyperref Warning: Composite letter `\textasciicaron+c'
 (hyperref)                not defined in PD1 encoding,
-(hyperref)                removing `\textasciicaron' on input line 298.
+(hyperref)                removing `\textasciicaron' on input line 364.
 
-(./zavrsni.bbl [10
+(./zavrsni.bbl [11
 
-]) [11
+]) [12
 
 ]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 321.
- [12]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 321.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 387.
+ [13]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 387.
  (./zavrsni.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 321.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 321.
-
-
-Package rerunfilecheck Warning: File `zavrsni.out' has changed.
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
-
-Package rerunfilecheck Info: Checksums for `zavrsni.out':
-(rerunfilecheck)             Before: FB2ADAF557BDC1BA2689616D09BFDD8F;622
-(rerunfilecheck)             After:  87B3D9AF6C197CE9DDCE2A9FFFF2DDC7;693.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 321.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 387.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 387.
+Package rerunfilecheck Info: File `zavrsni.out' has not changed.
+(rerunfilecheck)             Checksum: DF9663EC08E9417F211F295822EB2520;778.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 387.
  ) 
 Here is how much of TeX's memory you used:
- 10694 strings out of 492982
- 157567 string characters out of 6134896
- 283842 words of memory out of 5000000
- 13998 multiletter control sequences out of 15000+600000
+ 10708 strings out of 492982
+ 157765 string characters out of 6134896
+ 283940 words of memory out of 5000000
+ 14002 multiletter control sequences out of 15000+600000
  60340 words of font info for 82 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  43i,9n,42p,268b,374s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -973,21 +966,22 @@ e/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/share/texlive/texm
 f-dist/fonts/type1/public/amsfonts/cm/cmbx8.pfb></usr/share/texlive/texmf-dist/
 fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texlive/texmf-dist/fonts/
 type1/public/amsfonts/cm/cmmi12.pfb></usr/share/texlive/texmf-dist/fonts/type1/
-public/amsfonts/cm/cmmi8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/
-amsfonts/cm/cmr12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfont
-s/cm/cmr8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cms
-y10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb
-></usr/share/texlive/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/share/
-texlive/texmf-dist/fonts/type1/urw/courier/ucrro8a.pfb></usr/share/texlive/texm
-f-dist/fonts/type1/urw/helvetic/uhvb8a.pfb></usr/share/texlive/texmf-dist/fonts
-/type1/urw/helvetic/uhvr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/t
-imes/utmb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb
-></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/te
-xlive/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on zavrsni.pdf (16 pages, 283580 bytes).
+public/amsfonts/cm/cmmi6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/
+amsfonts/cm/cmmi8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfont
+s/cm/cmr12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cm
+r8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb
+></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/
+share/texlive/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/share/texlive
+/texmf-dist/fonts/type1/urw/courier/ucrro8a.pfb></usr/share/texlive/texmf-dist/
+fonts/type1/urw/helvetic/uhvb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/
+urw/helvetic/uhvr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/ut
+mb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/
+share/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texlive/t
+exmf-dist/fonts/type1/urw/times/utmri8a.pfb>
+Output written on zavrsni.pdf (17 pages, 298538 bytes).
 PDF statistics:
- 273 PDF objects out of 1000 (max. 8388607)
- 226 compressed objects within 3 object streams
- 53 named destinations out of 1000 (max. 500000)
- 111 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 302 PDF objects out of 1000 (max. 8388607)
+ 253 compressed objects within 3 object streams
+ 63 named destinations out of 1000 (max. 500000)
+ 127 words of extra memory for PDF output out of 10000 (max. 10000000)
 
