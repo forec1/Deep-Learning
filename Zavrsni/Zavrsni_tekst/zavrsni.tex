@@ -331,7 +331,7 @@ sljedećim izrazom:
 Ako se u danu aproksimaciju uvrsti pomak u smjeru najbržeg pada funkcije, 
 odnosno u smjeru negativnog gradijenta funkcije dobiva se:
 \begin{equation}
-	f(\vec{x} - \epsilon \cdot \nabla f(\vec{x}) \approx f(\vec{x}) - \epsilon
+	f(\vec{x} - \epsilon \cdot \nabla f(\vec{x})) \approx f(\vec{x}) - \epsilon
 	\cdot \nabla f(\vec{x})^\top \nabla f(\vec{x})
 \end{equation}
 gdje $\epsilon$ predstavlja mali pozitivan parametar koji se češće zove
@@ -343,7 +343,8 @@ izrazom \ref{eq:x_upd} i postupak se ponavlja za točku $\vec{x}'$.
 	\vec{x}' = \vec{x} - \epsilon\cdot \nabla f(\vec{x})
 	\label{eq:x_upd}
 \end{equation}
-\indent Svakim korakom
+\indent Ako funkcija $f$ predstavlja funkciju gubitka $\mathcal{L}$ 
+onda se svakim korakom
 gradijentnog spusta ažuriraju se parametri neuronske mreže izrazima:
 \begin{align}
 	\vec{w}' &= \vec{w} - \epsilon \cdot \nabla_\vec{w} \mathcal{L}(\vec{w}, 
@@ -357,8 +358,88 @@ gradijentnog spusta. Korak gradijentnog spusta se računa samo za dio skupa za
 učenje (engl. \textit{batch}). Prolazak kroz cijeli skup za učenje naziva se 
 epoha. Ovaj način također omogućava i bolje izbjegavanje lokalnih minimuma.
 
+\subsection{Optimizacija}
+Učenje neuronske mreže gradijentnim spustom može se ubrzati raznim 
+optimizacijskim metodama. 
+\\\indent Jedna od tih metoda je momentum. Definira se novi vektor $\vec{v}$,
+te se mijenja jednadžba za ažuriranje parametara gradijentnog spusta
+na sljedeći način:
+\begin{equation}
+\begin{aligned}
+	\vec{v}' &= \alpha \vec{v} - \epsilon \nabla \mathcal{L} \\
+	\vec{w}' &= \vec{w} + \vec{v}'
+\end{aligned}
+\end{equation}
+gdje je $\alpha \in [0, 1)$ hiperparametar koji modelira prigušenje koje
+omogućuje zaustavljanje u minimumu. Najčešće se inicijalizira na $0.9$. 
+Vektor $\vec{v}$ predstavlja brzinu kretanja prema minimumu, što je gradijent
+veći, brzina će se sve više povečavati.
+
+\subsection{Regularizacija}
+
 \subsection{Propagacija pogreške unatrag}
-Backprop 
+Propagacija pogreške unatrag (engl. \textit{back-propagation}) je algoritam
+za učinkovito računanje gradijenata funkcije putem rekurzivne primjene pravila
+ulančavanja. Dakle, za neku funkciju $f(\vec{x})$ gdje je $\vec{x}$ ulazni vektor,
+algoritam propagacije pogreške unatrag računa gradijent funkcije $f$ u 
+točki $\vec{x}$, tj. $\nabla f(\vec{x})$. Za slučaj učenja neuronske mreže
+gradijentim spustom, funkcija $f$ će odgovarati funkciji gubitka $\mathcal{L}$
+, a ulazni
+vektor $\vec{x}$ će se sastojati od podataka za učenje, težina $\vec{W}$ i 
+pomaka $\vec{b}$ neuronske mreže. 
+\\\indent U konačnici, to znači računanje parcijalnih derivacija
+$\partial \mathcal{L} / \partial w_{jk}^l$ i $\partial \mathcal{L} / \partial b_{j}^l$, gdje $w_{jk}^l$ označava težinu koja povezuje $k$-ti neuron u $(l-1)$-om
+sloju s $j$-tim neuronom u $l$-tom sloju. Slično, $b_{j}^l$ označava pomak
+$j$-tog neurona u $l$-tom sloju. Za računanje ovih parcijalnih derivacija
+uvodi se pogreška $\delta_j^l$ neurona $j$ u sloju $l$:
+\begin{equation}
+	\delta_j^l = \frac{\partial \mathcal{L}}{\partial net_j^l}
+\end{equation}
+gdje $net_j^l$ predstavlja izlaz iz neurona prije primjene aktivacijske funkcije
+definiran jednadžbom \ref{eq: net}. Za pogrešku neurona $\delta_j^L$
+u izlaznom sloju vrijedi:
+\begin{equation}
+	\delta_j^L = \frac{\partial \mathcal{L}}{\partial y_j^L}
+	\frac{\partial y_j^L}{\partial net_j^L} = 
+	\frac{\partial \mathcal{L}}{\partial y_j^L} f'(net_j^L)
+	\label{eq:neuron_err}
+\end{equation}
+gdje $y_j^L$ predstavlja izlaz iz neurona, a $f$ prijenosnu funkciju definirane
+jednadžbom \ref{eq: output}. Jednadžba \ref{eq:neuron_err} može se zapisati
+u matričnom obliku:
+\begin{equation}
+	\delta^L = \nabla_{y} \mathcal{L} \odot f'(net^L)
+	\label{eq:neuron_err_mat}
+\end{equation}
+gdje $\odot$ predstavlja umnožak matrica gdje se elementi na istim mjestima
+množe. Primjenom ove jednadžbe mogu se dobiti pogreške samo za neurone
+izlaznog sloja, ali poznavanjem pogrešaka nekog sloja mogu se dobiti 
+pogreške prethodnog sloja. Pogreške skrivenih slojeva se izračunavaju
+prema izrazu:
+\begin{equation}
+	\delta^l = ((w^{l+1})^\top \delta^{l+1}) \odot f'(net^l)
+	\label{eq:hid_neuron_err_mat}
+\end{equation}
+Jednadžbama \ref{eq:neuron_err_mat} i \ref{eq:hid_neuron_err_mat} može se
+izračunati pogreška $\delta^l$ za svaki sloj mreže. Prvo se izračuna
+pogreška izlaznog sloja $\delta^L$ pomoću jednadžbe \ref{eq:neuron_err_mat},
+zatim se pomoću jednadžbe \ref{eq:hid_neuron_err_mat} izračuna pogreška
+$\delta^{L-1}$, zatim pogreška $\delta^{L-2}$ i sve tako do ulaznog sloja
+mreže.\\\indent
+Parcijalna derivacija s obzirom na pomak odgovara upravo pogrešci neurona:
+\begin{equation}
+	\frac{\partial \mathcal{L}}{\partial b_j^l} = \delta_j^l
+	\label{eq:dL_db}
+\end{equation}
+dok je parcijalna derivacija s obzirom na težinu neurona:
+\begin{equation}
+	\frac{\partial \mathcal{L}}{\partial w_{jk}^l} = y_k^{l-1} \delta_j^l
+	\label{eq:dL_dw}
+\end{equation}
+Jednadžbama \ref{eq:dL_db} i \ref{eq:dL_dw} izračunava se ovisnost funkcije
+gubitka o
+pojedinim parametrima, što je i cilj algoritma propagacije pogreške unatrag.
+
 \chapter{Konvolucijska neuronska mreža}
 
 \chapter{Zaključak}

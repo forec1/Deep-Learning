@@ -7,7 +7,9 @@
 \contentsline {section}{\numberline {2.3}U\IeC {\v c}enje umjetne neuronske mre\IeC {\v z}e}{7}{section.2.3}
 \contentsline {subsection}{\numberline {2.3.1}Funkcija gubitka}{7}{subsection.2.3.1}
 \contentsline {subsection}{\numberline {2.3.2}Gradijentni spust}{8}{subsection.2.3.2}
-\contentsline {subsection}{\numberline {2.3.3}Propagacija pogre\IeC {\v s}ke unatrag}{9}{subsection.2.3.3}
-\contentsline {chapter}{\numberline {3}Konvolucijska neuronska mre\IeC {\v z}a}{10}{chapter.3}
-\contentsline {chapter}{\numberline {4}Zaklju\IeC {\v c}ak}{11}{chapter.4}
-\contentsline {chapter}{Literatura}{12}{chapter*.8}
+\contentsline {subsection}{\numberline {2.3.3}Optimizacija}{9}{subsection.2.3.3}
+\contentsline {subsection}{\numberline {2.3.4}Regularizacija}{9}{subsection.2.3.4}
+\contentsline {subsection}{\numberline {2.3.5}Propagacija pogre\IeC {\v s}ke unatrag}{9}{subsection.2.3.5}
+\contentsline {chapter}{\numberline {3}Konvolucijska neuronska mre\IeC {\v z}a}{11}{chapter.3}
+\contentsline {chapter}{\numberline {4}Zaklju\IeC {\v c}ak}{12}{chapter.4}
+\contentsline {chapter}{Literatura}{13}{chapter*.8}
