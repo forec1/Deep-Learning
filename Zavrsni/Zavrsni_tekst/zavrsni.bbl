@@ -1,4 +1,4 @@
-\begin{thebibliography}{3}
+\begin{thebibliography}{4}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -11,6 +11,12 @@ Ian Goodfellow, Yoshua Bengio, i Aaron Courville.
 \newblock \emph{Deep Learning}.
 \newblock MIT Press, 2016.
 \newblock \url{http://www.deeplearningbook.org}.
+
+\bibitem[He et~al.(2015)He, Zhang, Ren, i Sun]{DBLP:journals/corr/HeZRS15}
+Kaiming He, Xiangyu Zhang, Shaoqing Ren, i Jian Sun.
+\newblock Deep residual learning for image recognition.
+\newblock \emph{CoRR}, abs/1512.03385, 2015.
+\newblock URL \url{http://arxiv.org/abs/1512.03385}.
 
 \bibitem[Laina et~al.(2016)Laina, Rupprecht, Belagiannis, Tombari, i
   Navab]{DBLP:journals/corr/LainaRBTN16}

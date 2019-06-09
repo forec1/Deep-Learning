@@ -4,45 +4,45 @@ The top-level auxiliary file: zavrsni.aux
 The style file: fer.bst
 Database file #1: literatura.bib
 Warning--empty year in Cupic-UNN
-You've used 3 entries,
+You've used 4 entries,
             2773 wiz_defined-function locations,
-            613 strings with 5449 characters,
-and the built_in function-call counts, 1258 in all, are:
-= -- 100
-> -- 88
+            620 strings with 5652 characters,
+and the built_in function-call counts, 1739 in all, are:
+= -- 141
+> -- 127
 < -- 1
-+ -- 30
-- -- 27
-* -- 98
-:= -- 211
-add.period$ -- 11
-call.type$ -- 3
-change.case$ -- 17
-chr.to.int$ -- 3
-cite$ -- 7
-duplicate$ -- 58
-empty$ -- 92
-format.name$ -- 30
-if$ -- 248
++ -- 43
+- -- 39
+* -- 141
+:= -- 291
+add.period$ -- 15
+call.type$ -- 4
+change.case$ -- 24
+chr.to.int$ -- 4
+cite$ -- 9
+duplicate$ -- 78
+empty$ -- 123
+format.name$ -- 43
+if$ -- 345
 int.to.chr$ -- 1
 int.to.str$ -- 1
-missing$ -- 3
-newline$ -- 25
-num.names$ -- 12
-pop$ -- 39
+missing$ -- 4
+newline$ -- 31
+num.names$ -- 16
+pop$ -- 50
 preamble$ -- 1
-purify$ -- 15
+purify$ -- 21
 quote$ -- 0
-skip$ -- 43
+skip$ -- 60
 stack$ -- 0
-substring$ -- 6
-swap$ -- 3
+substring$ -- 8
+swap$ -- 4
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 28
+type$ -- 39
 warning$ -- 1
-while$ -- 9
+while$ -- 12
 width$ -- 0
-write$ -- 47
+write$ -- 62
 (There was 1 warning)

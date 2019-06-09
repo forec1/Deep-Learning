@@ -10,5 +10,12 @@
 \BOOKMARK [2][-]{subsection.2.3.4}{Regularizacija}{section.2.3}% 10
 \BOOKMARK [2][-]{subsection.2.3.5}{Propagacija pogre\235ke unatrag}{section.2.3}% 11
 \BOOKMARK [0][-]{chapter.3}{Konvolucijska neuronska mre\236a}{}% 12
-\BOOKMARK [0][-]{chapter.4}{Zakljucak}{}% 13
-\BOOKMARK [0][-]{chapter*.8}{Literatura}{}% 14
+\BOOKMARK [1][-]{section.3.1}{Rezidualna neuronska mre\236a}{chapter.3}% 13
+\BOOKMARK [0][-]{chapter.4}{Implementacija}{}% 14
+\BOOKMARK [1][-]{section.4.1}{Kori\235teni alati i tehnologije}{chapter.4}% 15
+\BOOKMARK [1][-]{section.4.2}{NYU Depth podaci}{chapter.4}% 16
+\BOOKMARK [1][-]{section.4.3}{Priprema podataka}{chapter.4}% 17
+\BOOKMARK [1][-]{section.4.4}{Arhitektura modela}{chapter.4}% 18
+\BOOKMARK [0][-]{chapter.5}{Rezultati}{}% 19
+\BOOKMARK [0][-]{chapter.6}{Zakljucak}{}% 20
+\BOOKMARK [0][-]{chapter*.19}{Literatura}{}% 21

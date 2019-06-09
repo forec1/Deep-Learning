@@ -3,6 +3,7 @@
 \usepackage{graphicx}
 \usepackage{svg}
 \usepackage{amsmath}
+\usepackage{listings}
 \usepackage[hidelinks]{hyperref}
 \renewcommand{\vec}[1]{\mathbf{#1}}
 
@@ -40,7 +41,7 @@ raznih znakova ili naznaka o dubini. Obično se dijele na binokularne
 znakove koji sadrže informacije u tri dimenzije i mogu se vidjeti s dva 
 oka i monokularne znakove koji sadrže informacije u dvije dimenzije i 
 mogu se vidjeti s jednim okom.\\\indent 
-Tijekom godina razvile su se razne tehnike za predikciju dubine poput
+Tijekom godina razvile su se razne tehnike za predikciju dubine scene poput
 stereoskopije koja se oslanja na binokularne znakove. Korištenjem dvije slike 
 iste scene koje su dobivene iz malo drugačijih kuteva, moguće je izračunati 
 udaljenost od objekta. Aplikacijama koje uključuju 
@@ -52,11 +53,20 @@ može nastati beskonačno mnogo različitih trodimenzionalnih scena. Za ljude
 ovo ne predstavlja veliki problem, jer možemo jako dobro iskoristiti 
 monokularne znakove, ali za računala predstavlja ogroman problem za riješiti 
 s velikom preciznosti i malom uporabom resursa.
-Zbog navedenog razloga, u zadnje vrijeme upotrebljavaju se konvolucijski
-modeli koji uče odnos između piksela boje i dubine, što je i predmet ovog
+Zbog navedenog razloga te jednostavnosti primjene, u zadnje vrijeme se sve
+češće upotrebljavaju konvolucijske
+neuronske mreže koji uče odnos između piksela boje i dubine, što je i predmet ovog
 rada. Detaljnije ću obraditi konvolucijsku neuronsku mrežu predloženu u 
 \cite{DBLP:journals/corr/LainaRBTN16}, te ju implementirati i primijeniti na
-na problem jednooke predikcije dubine scene.\\\indent
+ problem jednooke predikcije dubine scene.\\\indent
+U drugom poglavlju objašnjeni su osnovni pojmovi vezani uz umjetne neuronske
+mreže, te osnovni algoritmi koji se koriste prilikom njihovog učenja. Treće
+poglavlje opisuje konvolucijske neuronske mreže te zašto su one bitne. U sklopu
+trećeg poglavlja još se opisuju rezidualne neuronske mreže i koje probleme
+one rješavaju. Četvrto poglavlje bavi se detaljima implementacije predložene
+arhitekture, te se ukratko opisuje korišteni programski okvir PyTorch.
+U petom poglavlju su opisani rezultati koje je model ostvario.
+
 
 \chapter{Umjetna neuronska mreža}
 
@@ -67,7 +77,7 @@ zvane umjetni neuroni koji se međusobno povezuju te grade
 umjetne neuronske mreže. 
 \\\indent Ovaj rad se bavi samo unaprijednim neuronskim
 mrežama (engl. \textit{feedforward neural networks}). Cilj unaprijedne
-neuronske mreže je aproksimirati neku funkciju $f^*$, na način da definira
+neuronske mreže je aproksimirati neku funkciju $f^*$, tako da definira
 preslikavanje $\vec{y} = f(\vec{x};\pmb{\theta})$ i nauči vrijednost
 parametara $\pmb{\theta}$ kako bi najbolje aproksimirala ciljanu funkciju $f^*$.
 Ovakvi modeli zovu se unaprijedni jer nema veza koje izlaze iz modela vraćaju
@@ -373,9 +383,54 @@ na sljedeći način:
 gdje je $\alpha \in [0, 1)$ hiperparametar koji modelira prigušenje koje
 omogućuje zaustavljanje u minimumu. Najčešće se inicijalizira na $0.9$. 
 Vektor $\vec{v}$ predstavlja brzinu kretanja prema minimumu, što je gradijent
-veći, brzina će se sve više povečavati.
+veći, brzina će se sve više povećavati.
 
 \subsection{Regularizacija}
+Neuronska mreža mora imati dobre rezultate izvođenja ne samo na skupu 
+podataka za učenje, nego i na novim podatcima. Razvijene su razne metode
+kako bi se smanjila pogreška na novim podatcima, pa čak i ako se poveća
+pogreška na skupu za učenje. Ove metode poznate su kao regularizacija.
+\\\indent Jedna od metoda je dodavanje funkciji gubitka dodatni član:
+\begin{equation}
+	\mathcal{L}_r = \mathcal{L} + \lambda N(w)
+\end{equation}
+gdje je $\mathcal{L}$ gubitak, a $\lambda$ je hiperparametar koji određuje
+utjecaj regularizacijskog člana. Ako regularizacijski član odgovara
+$L^1$-normi ili $L^2$-normi, onda se ova metoda zove $L^1$-regularizacija, 
+odnosno $L^2$-regularizacija. U tom slučaju funkcija gubitka se može ovako
+napisati:
+\begin{align}
+	\label{eq:l1_reg}
+	\mathcal{L}_r &= \mathcal{L} + \lambda \sum_i |w_i|	 \\
+	\mathcal{L}_r &= \mathcal{L} + \lambda \sum_i w_i^2
+	\label{eq:l2_reg}
+\end{align}
+gdje se jednadžba \ref{eq:l1_reg} odnosi na $L^1$-regularizaciju, a 
+\ref{eq:l2_reg} na $L^2$ regularizaciju. Posljedica dodavanja regularizacijskog
+člana je preferiranje učenja manjih težina.
+\\\indent Sljedeća metoda je dropout, koja se dosta razlikuje od $L^1$ i 
+$L^2$ regularizacije. Ova metoda se ne oslanja na izmjenjivanje funkcije 
+gubitka nego na izmjenjivanje same mreže. Svaki neuron u skrivenom sloju
+s određenom vjerojatnošću privremeno postaje isključen tijekom učenja.
+Tako se sprječava da utjecaj nekih neurona postane prevelik i tako uzrokuje prenaučenost.
+\\\indent Povećavanje skupa za učenje je još jedan način kako smanjiti
+prenaučenost. Dobivanje novih podataka za učenje može biti skupo i nije
+uvijek moguće. Zato se postojeći skup podataka za učenje može proširiti
+raznim transformacijama. To mogu biti razne transformacije poput rotacije,
+zrcaljenja, skaliranja, izmjene svjetline i kontrasta. 
+\\\indent Još jedan oblik regularizacije je normalizacija nad grupama
+(engl. \textit{batch-normalization}). Izlaz iz svakog sloja se normalizira. 
+Ako je $\mu_B$ aritmetička sredina, a $\sigma_B^2$ varijanca podataka mini grupe $B$, tada za sloj s ulazom $x = (x^{(1)}, ..., x^{(d)})$ se primjenjuje 
+normalizacija:
+\begin{equation}
+	\hat{x}^{(k)} = \frac{x^{(k)} - \mu_B}{\sqrt{\sigma_B^2 + \epsilon }}
+\end{equation}
+Bez normalizacije male promjene u prvim slojevima će se povećati kako se 
+propagiraju kroz mrežu, što rezultira velikim promjenama u dubljim slojevima.
+Metoda normalizacije nad grupama smanjiva ovakve neželjene promjene i tako
+ubrzava proces treniranja. Kako ova metoda koristi srednju vrijednost i 
+varijancu grupe koje su svaku epohu različite, model ne trenira na istim
+podatcima i tako se postiže regularizacija.
 
 \subsection{Propagacija pogreške unatrag}
 Propagacija pogreške unatrag (engl. \textit{back-propagation}) je algoritam
@@ -383,7 +438,7 @@ za učinkovito računanje gradijenata funkcije putem rekurzivne primjene pravila
 ulančavanja. Dakle, za neku funkciju $f(\vec{x})$ gdje je $\vec{x}$ ulazni vektor,
 algoritam propagacije pogreške unatrag računa gradijent funkcije $f$ u 
 točki $\vec{x}$, tj. $\nabla f(\vec{x})$. Za slučaj učenja neuronske mreže
-gradijentim spustom, funkcija $f$ će odgovarati funkciji gubitka $\mathcal{L}$
+gradijentnim spustom, funkcija $f$ će odgovarati funkciji gubitka $\mathcal{L}$
 , a ulazni
 vektor $\vec{x}$ će se sastojati od podataka za učenje, težina $\vec{W}$ i 
 pomaka $\vec{b}$ neuronske mreže. 
@@ -441,6 +496,268 @@ gubitka o
 pojedinim parametrima, što je i cilj algoritma propagacije pogreške unatrag.
 
 \chapter{Konvolucijska neuronska mreža}
+Konvolucijske neuronske mreže (engl. \textit{convolutional neural networks}) 
+su posebna vrsta neuronskih mreža za obradu podataka koji imaju rešetkastu
+(engl. \textit{grid-like}) topologiju. Najbolji primjer su slikovni podatci,
+koji se mogu smatrati kao 2D rešetka piksela. 
+\\\indent Kod tradicionalnih potpuno povezanih neuronskih mreža izlaz iz
+svakog neurona u jednom sloju je povezan sa svakim neuronom u sljedećem sloju.
+Za slike dimenzija HxWxC ulaz u mrežu je dimenzija $H \cdot W \cdot C$ što
+znači da će samo jedan neuron u prvom skrivenom sloju
+imati $H \cdot W \cdot C$ težina. Neuronska mreža u većini slučajeva ima
+više od jednog neurona u skrivenom sloju te će doći do pojave previše
+parametara.
+\\\indent Konvolucijske neuronske mreže imaju prorijeđenu interakciju između
+neurona, što znači da je potrebno pohraniti manje parametara i da izračunavanje 
+izlaza zahtjeva manje operacija. Na slici \ref{fig:pror} je označen neuron
+$x_3$ i izlazni neuroni $\vec{s}$ koji su povezani s tim neuronom. Lijevo
+je prikazana prorijeđena interakcija, a desno potpuno povezana.
+\begin{figure}[htb]
+	\centering
+	\includegraphics[scale=0.45]{pror.pdf}
+	\caption{Primjer prorijeđene interakcije neurona}
+	\label{fig:pror}
+\end{figure}
+\\\indent Slojevi konvolucijske neuronske mreže su organizirani u tri 
+dimenzije: visina, dužina i dubina. Neuroni u pojedinom sloju su povezani
+samo s malim dijelom neurona u prethodnom sloju, a ne sa svim neuronima kao
+kod potpuno povezanih slojeva. Konvolucijske neuronske mreže grade se od
+tri osnovna sloja: konvolucijski sloj, sloj sažimanja i potpuno povezani sloj.
+\\\indent \textbf{Konvolucijski sloj} je temeljni sloj konvolucijske 
+neuronske mreže. Parametri ovog sloja sastoje se od skupa filtera koji
+se mogu naučiti. Filteri su prostorno dosta manjih dimenzija od ulaza u 
+sloj. Izlazi se izračunavaju tako da se primjenjuje dvodimenzionalna
+konvolucija ulaza s filterom čime se dobiva dvodimenzijska mapa
+značajki. Na slici \ref{fig:conv} filter je dimenzija 2x2, dok je ulaz
+dimenzija 3x4. Filter se pomjera po dužini i visini ulaza i izračunava se
+skalarni produkt između članova filtera s članovima ulaza na odgovarajućim
+pozicijama. Na kraju se dobiva mapa značajki s dimenzijama 2x3.
+\begin{figure}[htb]
+	\centering
+	\includegraphics[scale=0.40]{conv.pdf}
+	\caption{Konvolucija ulaza i filtera}
+	\label{fig:conv}
+\end{figure}
+Konvolucijski slojevi obično imaju više filtera, i svaki od njih će 
+izračunati zasebnu mapu značajki koje se slažu po dubini i tako stvaraju
+izlaz. Na dobivene izlaze još se primjenjuje prijenosna funkcija. Broj
+neurona koji su povezani s neuronom u sljedećem sloju
+zove se receptivno polje neurona i odgovara upravo veličini filtera.
+\\\indent Kako bi izlazne mape značajki imale istu visinu i dužinu kao i ulaz
+ponekad je potrebno nadopuniti ulaz kako filter prilikom konvolucije ne bi
+prelazio rubove ulaza. Najčešće se koristi nadopunjavanje nulama. Filter
+se ne mora uvijek micati samo po jedan neurona, ali ako se miće po više 
+neurona odjednom dimenzija izlaza će se smanjiti. Broj za koji se filter
+miće zove se korak (engl. \textit{stride}).
+\\\indent \textbf{Sloj sažimanja} je sloj koji smanjiva prostorne dimenzije 
+(visinu i dužinu) ulaza kako bi se smanjio broj parametara neuronske mreže.
+Primjenjuje se nezavisno na svakoj od mapi značajki. Sažimanje se može
+ostvariti na više načina, ali se najčešće koristi sažimanje maksimalnom 
+vrijednošću (engl. \textit{max-pooling}). Odabire se veličina i korak filtera,
+te se primjenjuje funkcija sažimanja na područje koje odgovara trenutnoj
+poziciji filtera. Na slici \ref{fig:max_pool} je prikazano sažimanje 
+maksimalnom vrijednošću s veličinom filtera 2x2 i korakom 2.
+\begin{figure}[htb]
+	\centering
+	\includegraphics[scale=0.40]{max_pool.pdf}
+	\caption{Sažimanje maksimalnom vrijednošću s filterom veličine 2x2 i korakom 2}
+	\label{fig:max_pool}
+\end{figure}
+Ovaj sloj ne uvodi dodatne parametre u mrežu.
+
+\section{Rezidualna neuronska mreža}
+Duboke konvolucijske neuronske mreže su se pokazale jako učinkovite pri
+rješavanju problema iz područja računalnog vida. Također se pokazalo da je
+dubina neuronske mreže jako važna. Ali nakon određenog broja slojeva
+dolazi do problema nestajućih i eksplodirajućih gradijenata što sprječava 
+učenje od početka. Ovaj problem se u velikoj mjeri rješava normaliziranim
+inicijaliziranjem i normalizacijskim slojevima, što omogućava mrežama s
+desetak slojeva konvergirati. Međutim, pojavio se problem degradacije: 
+kako se dubina mreže povećava točnost mreže počinje naglo opadati.
+\\\indent Kao rješenje navedenog problema razvile su se rezidualne
+neuronske mreže koje koriste rezidualne blokove definirane u 
+\cite{DBLP:journals/corr/HeZRS15}. Ovi blokovi uvode nove
+veze u slojevima zvane prečice koje preskaču jedan ili više slojeva i zbrajaju
+se s izlazom zadnjeg preskočenog sloja. Kako se izlaz iz prečice zbraja sa
+izlazom preskočenih slojeva dimenzije im se moraju podudarati.
+\\\indent Rezidualni blokovi rješavaju problem degradacije, te dodavanjem
+novih slojeva pospješuju se rezultati, ali se povećava broj parametara.
+Za mreže s 50 slojeva i više koriste se rezidualni blokovi s uskim grlom, kako 
+bi smanjili broj parametara. Kod običnih rezidualnih blokova koriste se
+dva konvolucijska sloja s filterima veličine 3x3, dok blok s uskim grlom
+koristi jednu takvu konvoluciju i dvije konvolucije s filterima veličine 1x1
+ispred i iza nje. Prva konvolucija smanjiva broj filtera, dok zadnja 
+povećava na početni broj kako bi se omogućilo zbrajanje s izlazom iz prečice.
+
+\chapter{Implementacija}
+Programska implementacija konvolucijskog modela za jednooku predikciju dubine 
+scene ostvarena je po uzoru na rad \citep{DBLP:journals/corr/LainaRBTN16} uz
+manje promjene.
+
+\section{Korišteni alati i tehnologije}
+Za izradu rada korišten je programski jezik Python\footnote{https://
+www.python.org}, radno okruženje PyTorch\footnote{https://pytorch.org},
+te biblioteke Numpy\footnote{https://www.numpy.org}, h5py\footnote{https://
+www.h5py.org}, matplotlib\footnote{https://matplotlib.org}, sckit-image
+\footnote{https://scikit-image.org/}. Biblioteka Numpy je korištena za efikasno 
+izvršavanje različitih operacija nad matricama, dok je biblioteka sckit-image 
+korištena za učitavanje slika. 
+Biblioteka h5py korištena je za jednostavno spremanje i učitavanje slika.
+Za vizualizaciju podataka i rezultata korištena je biblioteka matplotlib.
+\\\indent Veći dio programske implementacije napisan je koristeći radno
+okruženje PyTorch. Verzija PyTorcha u kojoj je pisana programska implementacija
+je 1.0.1. Jedna od bitnijih karakteristika ovog radnog okruženja je njegov
+tensor koji je jako sličan Numpy-ovom polju s dodatkom da se
+može izvoditi na GPU koji podržava CUDA što omogućava veću brzinu izvođenja.
+Još jedno bitno svojstvo PyTorcha je to što omogućava jednostavnu implementaciju
+propagacije pogreške unatrag. Prilikom izvršavanja matematičkih operacija 
+nad tensorima PyTorch sprema koje su se operacije izvodile i pomoću toga
+izračunava gradijente. Ova metoda zove se automatska diferencijacija i 
+implementirana je u modulu \textit{Autograd}.
+\\\indent Jednostavan primjer automatske diferencijacije u PyTorchu:
+\begin{lstlisting}[numbers=left, language=Python, frame=single]
+import torch
+
+x = torch.ones(1, requires_grad=True) #tensor([1.])
+y = x + 2 #tensor([3.])
+z = y * y * 3 #tensor([27.])
+
+z.backward() #racunanje gradijenata unatrag
+
+print(x.grad) #dz/dx = 18 
+
+\end{lstlisting}
+
+\section{NYU Depth podaci}
+Neuronska mreža je trenirana na \textit{NYU Depth v2} skupu podataka.
+Skup se sastoji od slijeda videa iz raznih scena iz zatvorenih prostora 
+koje su snimane s RGB i dubinskom kamerom Microsoft Kinect. Ukupno ima
+464	scene iz 3 različita grada, 1449 gusto označenih usklađenih parova
+RGB slika i dubinskih slika, te 407024 neusklađenih slika. Označeni podatci
+su prethodno obrađeni da popune nedostajuće dubinske oznake, dok su ostali
+podatci neobrađeni.
+\begin{figure}[htb]
+	\centering
+	\includegraphics[scale=1]{labeled.png}
+	\caption{Primjer prethodno obrađenih podataka}
+	\label{fig:lab}
+\end{figure}
+\begin{figure}[htb]
+	\centering
+	\includegraphics[scale=0.7]{raw.png}
+	\caption{Primjer neobrađenih podataka}
+	\label{fig:lab}
+\end{figure}
+\newpage  
+\section{Priprema podataka}
+Treniranje neuronske mreže se provodi nadziranim učenjem nad neobrađenim 
+podatcima. Neobrađeni podatci se sastoje od 464 scene s podjelom na 249
+scene za treniranje i 215 za testiranje. Za treniranje se međutim koristi 
+mali podskup slika iz 242 scene za treniranje. Iz svake scene uzorkovano je 
+50 jednako udaljenih slika i odgovarajućih dubinskih slika, što je rezultiralo
+od ukupno 12100 parova RGB-D slika. Prilikom treniranja provodi se umjetno
+proširivanje skupa za učenje čime se dobiva blizu 95000 RGB-D parova.
+\\\indent Ulazne RGB slike imaju dimenzije 640x480, te se moraju svesti na 
+dimenzije ulaza u neuronsku mrežu. Prvo se uzorkuju (engl. \textit{down-sample})
+na pola veličine, zatim se odrežu u sredini na dimenzije 304x228.
+\\\indent Nad tim ulaznim RGB slikama se primjenjuju transformacija za
+umjetno proširivanje skupa podataka. Transformacije koje se primjenjuju:
+\begin{itemize}
+	\item Skaliranje: ulazne slike i dubinske mape se skaliraju sa 
+	$s \in [1, 1.5]$ i dubinske mape se dijele sa $s$.
+	\item Rotacija: ulazne slike i dubinske mape se rotiriaju za 
+	$r \in [-5, 5]$ stupnjeva.
+	\item Translacija: ulazne slike i dubinske mape su odrezane na
+	nasumično odabranim mjestima kako bi im dimenzije odgovarale 
+	dimenzijama ulaza u mrežu.
+	\item Boja: ulazne slike se množe s nasumičnom RGB vrijednosti
+	$c \in [0.8, 1.2]^3	$.
+	\item Okretanje: ulazne slike i dubinske mape su vodoravno preokrenute
+	s vjerojatnošću od 0.5.
+\end{itemize}
+Ovaj postupak se ponavlja 8 puta za svaki RGB-D par.
+
+\section{Arhitektura modela}
+Arhitektura neuronske mreže se nadograđuje na ResNet-50 model. Zamjenjuje se
+zadnji potpuno povezani sloj, koji je dio izvorne arhitekture, s novim blokovima
+za naduzorkovanje, čime se dobiva izlaz koji približno duplo manje 
+dimenzije od ulaza. Zadnji konvolucijski sloj ResNet-50 modela proizvodi 
+izlaz s 2048 mapi značajki s dimenzijama 10x8, zatim se blokovima za 
+naduzorkovanje postiže izlaz dimenzija 160x128 piksela. Arhitektura 
+modela je vidljiva na slici \ref{fig:model}.
+\begin{figure}[htb]
+	\centering
+	\includegraphics[scale=0.45]{model.png}
+	\caption{Arhitektura modela}
+	\label{fig:model}
+\end{figure}
+
+\indent Kako bi se povećala rezolucija izlaza uvode se novi blokovi za
+naduzorkovanja zvano up-convolution blokovi. Cilj ovih blokova je
+povećati za duplo dimenzije ulaza, tako da preslikavaju svaki ulaz
+u gornji lijevi kut filtera veličine 2x2, a ostatak filtera se puni nulama. 
+Nakon svakog takvog sloja slijedi konvolucijski sloj s filterom veličine 5x5 i 
+zatim ReLU sloj. Up-convolution blok vidljiv je na slici \ref{fig:upconv}.
+
+\begin{figure}[htb]
+	\centering
+	\includegraphics[scale=0.45]{up-conv.png}
+	\caption{Up-convolution blok}
+	\label{fig:upconv}
+\end{figure}
+
+Ovaj blok se dalje proširuje kako bi se stvorio up-projection blok. Nakon
+up-convolution bloka dodaje se 3x3 konvolucija i rezultatu se dodaje
+projekcijska veza iz mape značajki s manjom rezolucijom kako je prikazano na 
+slici \ref{fig:upproj}. Zbog razlike u dimenzijama, manje mape značajki trebaju
+se naduzorkovati s još jednim up-convolution blokom. Prva operacija 
+up-convolution bloka se primjenjuje za obje grane zajedno, a zatim se 5x5
+konvolucija primjenjuje odvojeno.
+\begin{figure}[htb]
+	\centering
+	\includegraphics[scale=0.45]{up-proj.png}
+	\caption{Up-projection blok}
+	\label{fig:upproj}
+\end{figure}
+
+Kako bi se povećala učinkovitost up-convolution bloka uvodi se novi
+brzi up-convolution blok. Nakon primjene prve operacije u up-convolution
+bloku $75\%$ brojeva u izlaznim mapama značajki su nule, prema tome 5x5
+konvolucija većinom djeluje na nulama, što se može izbjeći. Ovo se može
+vidjeti na slici \ref{fig:fast}.
+
+\begin{figure}[htb]
+	\centering
+	\includegraphics[scale=0.45]{fast.png}
+	\caption{Način rada brzog up-convolution bloka}
+	\label{fig:fast}
+\end{figure}
+Nakon povećavanja dimenzije mapi značajki, te primjene 5x5 konvolucije, samo
+se određene težine množe s vrijednostima koje nisu nula. Te težine se dijele
+na četiri grupe koje se ne preklapaju, prikazane oznakama A,B,C,D i različitim
+bojama. Na temelju te četiri grupe izvorna 5x5 konvolucija se zamjenjuje s četiri nova
+filtera dimenzija 3x3 (A), 3x2 (B), 2x3 (C), 2x2 (D). Isti izlaz se sad može 
+ostvariti kao i kod izvornih operacija umetanjem elemenata iz četiri nove
+mape značajki kao što je prikazano na slici \ref{fig:fast}. Brzi
+up-convolution blok koji koristi ovu metodu prikazan je na slici \ref{fig:fastc}.
+
+\begin{figure}[htb]
+	\centering
+	\includegraphics[scale=0.45]{fast-conv.png}
+	\caption{Brzi up-convolution blok}
+	\label{fig:fastc}
+\end{figure}
+Kako se kod običnog up-convolution bloka uvodi novi up-projection blok, tako
+se i za brzi up-convolution blok uvodi novi brzi up-projection blok. Njegova
+arhitektura prikazana je na slici \ref{fig:fastp}.
+\begin{figure}[htb]
+	\centering
+	\includegraphics[scale=0.45]{fast-proj.png}
+	\caption{Brzi up-projection blok}
+	\label{fig:fastp}
+\end{figure}
+
+\chapter{Rezultati}
 
 \chapter{Zaključak}
 Zaključak.
@@ -449,6 +766,7 @@ Zaključak.
 \bibliographystyle{fer}
 \nocite{Cupic-UNN}
 \nocite{Goodfellow-et-al-2016}
+\nocite{DBLP:journals/corr/HeZRS15}
 
 
 \begin{sazetak}
