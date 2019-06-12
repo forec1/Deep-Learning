@@ -7,6 +7,10 @@
 \usepackage[hidelinks]{hyperref}
 \renewcommand{\vec}[1]{\mathbf{#1}}
 
+\usepackage{url}
+\def\UrlBreaks{\do\/\do-}
+
+
 \graphicspath{ {./images/} }
 
 \begin{document}
@@ -758,29 +762,125 @@ arhitektura prikazana je na slici \ref{fig:fastp}.
 \end{figure}
 
 \chapter{Rezultati}
+Model je evaluiran na NYU Depth v2 skupu podataka i rezultati su uspoređeni s
+rezultatima drugih autora. Kao mjera točnosti korištena je srednja apsolutna
+relativna pogreška i srednja kvadratna pogreška. Srednja apsolutna relativna
+pogreška računa se prema izrazu:
+\begin{equation}
+	\eta = \frac{1}{n}\sum_{i=1}^n\frac{|x - \hat{x}|}{x}
+\end{equation}
+gdje n predstavlja ukupan broj piksela, $x$ predstavlja ispravnu vrijednost, a
+$\hat{x}$ predstavlja predikciju. Srednja kvadratna pogreška računa se prema
+sljedećem izrazu:
+\begin{equation}
+	\eta = \frac{1}{n}\sum_{i=1}^n(x - \hat{x})^2.
+\end{equation}.
+\\\indent Prilikom treniranja korištena je obrnuta Huber (berHu) funkcija 
+pogreške. Definirana je izrazom :
+\begin{equation}
+	\mathcal{B}(x) = 
+	\begin{cases}
+		|x| \quad \quad |x| \leq c, \\
+		\frac{x^2+c^2}{2c} \quad |x| > c.
+	\end{cases}
+\end{equation}
+Berhu funkcija gubitka jednaka je $\mathcal{L}_1$ funkciji kad je $x \in [-c, c]$
+i $\mathcal{L}_2$ funkciji kad je $x$ izvan danog intervala. Verzija koja se
+ovdje koristi je kontinuirana na prijelazu između $\mathcal{L}_1$ i 
+$\mathcal{L}_2$. U svakom koraku gradijentnog spusta izračunava se
+$\mathcal{B}(\hat{y} - y)$, gdje $y$ predstavlja ispravne vrijednosti 
+piksela, a $\hat{y}$ predikciju, te se postavlja $c = \frac{1}{5}max_i(|\hat{y}
+_i-y_i|)$ gdje $i$ indeksira sve piksele slika u trenutnoj grupi za učenje.
+\\\indent Skup za treniranje sastoji se od ukupno 96800 slika dobivenih umjetnim
+proširivanjem orginalnog skupa za učenje koji se sastoji od 12100 slika.
+\\\indent Treniranje se provodi stohasitčkim gradijentnim spustom s metodom 
+zaleta gdje se momentum postavlja na 0.9, a  
+početna stopa učenja na $10^{-2}$  koja se umanjuje
+10 puta svakih 5 epoha. Treniranje je provedeno kroz ukupno 20 epoha. Koriste se 
+mini-grupe za učenje veličine 16 slika. Kako su
+dimenzije izlaza manje od dimenzija slika s ispravnim vrijednostima, te slike
+se prilikom treniranja uzorkuju na dimenzije izlaza iz mreže (engl. 
+\textit{down-sample}). Slike s ispravnim vrijednostima nisu prethodno obrađene,
+te svi pikseli koji su udaljeniji od 10 metara poprimaju vrijednosti iz
+intervala $[0, 0.5]$. Prilikom treniranja ti se pikseli ne uzimaju u obzir pri
+izračunavanju gubitka. Prilikom računanja srednje apsolutne relativne i srednje
+kvadratne pogreške izlazi iz mreže se naduzorkuju (engl. \textit{up-sample}) na
+dimenzije slika s ispravnim vrijednostima.
+\\\indent Dobivena srednja apsolutna relativna pogreška na skupu za treniranje 
+je 0.445, dok je srednja kvadratna pogreška 1.973. Na skupu za validaciju 
+dobivena srednja apsolutna relativna pogreška je 1.072, dok je srednja
+kvadratna pogreška 5.979. Rezultati su dosta lošiji od onih u radu
+\citep{DBLP:journals/corr/LainaRBTN16} i \cite{NIPS2014_5539}.
+\\\indent Treniranje s $\mathcal{L}_2$ funckijom gubitka daje nešto lošije
+rezultate. Ako se umjesto običnog stohastičkog gradijentnog spusta korsiti
+algoritam adam, funkcija gubitka sporije konvergira i dobiju se lošiji
+rezultati.
+\\\indent Na slici \ref{fig:res} grafički su prikazani rezultati. U lijevom 
+stupcu prikazane su ulazne slike, u srednjem stupcu prikazane su ispravne
+vrijednosti, dok su u desnom stupcu prikazani izlazi iz neuronske mreže.
+
+\begin{figure}[htb]
+	\centering
+	\includegraphics[scale=0.3]{test1.png}
+	\includegraphics[scale=0.3]{test2.png}
+	\includegraphics[scale=0.3]{test3.png}
+	\includegraphics[scale=0.3]{test4.png}
+	\caption{Grafički prikaz rezultata}
+	\label{fig:res}
+\end{figure}
 
 \chapter{Zaključak}
-Zaključak.
+U radu su opisana osnovna svojstva neuronskih mreža te njihov rad. Opisani su
+algoritmi gradijentnog spusta i propagacije pogreške unatrag pomoću kojih 
+mreža uči. Objašjenjeni su motivi za nastanak konvolucijskih neuronskih mreža,
+njihov rad i glavne razlike u odnosu na tradicionalne potpuno povezane 
+neuronske mreže. Implementirana je konvolucijska neuronska mreža po 
+uzoru na \cite{DBLP:journals/corr/LainaRBTN16} korištenjem programskog
+okvira PyTorch.
+\\\indent Zbog jednostavnosti primjene, jednooka predikcija dubine scene je
+važna alternativa metodama koje iskorištavaju binokularne znakove. Nastanak
+rezidualnih neuronskih mreža omogućio je stvaranje jako dubokih modela koji
+ostvaruju vrlo zanimljive rezutate u ovom području. No i dalje je ovo jako 
+zahtjevan zadatak za račanula za riješiti s velikom preciznošću.
+\\\indent Implementacija modela nije uspješno rekreirala rezultate iz rada
+\cite{DBLP:journals/corr/LainaRBTN16}. Model je naučio iskorištavati određene
+monokularne znakove, ali je greška i dalje velika. Treniranje se odvija na ogromnoj
+količini podataka koji nisu prethodno obrađeni te imaju dosta šumova i pogrešnih
+piksela. Može se zaključiti kako rezultati i dalje dosta ovise o podacima 
+bez obzira na dubinu mreže. 
 
 \bibliography{literatura}
 \bibliographystyle{fer}
 \nocite{Cupic-UNN}
 \nocite{Goodfellow-et-al-2016}
 \nocite{DBLP:journals/corr/HeZRS15}
-
+\nocite{Andelic}
+\nocite{Nielsen}
 
 \begin{sazetak}
-Sažetak na hrvatskom jeziku.
+Rad opisuje općenito neuronske mreže, a posebno konvolucijske
+neuronske mreže. Opisan je način učenja neuronske mreže algoritmom gradijentnog
+spusta. U radu se također opisuju rezidualne neuronske mreže. Programski je
+implementiran i evaluiran konvolucijski model za jednooku predikciju dubine 
+scene koji se temelji na konkretnoj implementaciji rezidualnih neuronskih
+mreža, ResNet50. Na kraju su prikazani rezultati.
 
-\kljucnerijeci{Ključne riječi, odvojene zarezima.}
+\kljucnerijeci{neuronske mreže, konvolucijske neuronske mreže, 
+rezidualne neuronske mreže, ResNet, jednooka predikcija dubine scene }
 \end{sazetak}
 
 % TODO: Navedite naslov na engleskom jeziku.
-\engtitle{Title}
+\engtitle{Convolutional Models for Monocular Depth Prediction}
 \begin{abstract}
-Abstract.
+Paper desribes generally neural networks, especially the
+convolutional neural networks. The neural network learning method by gradient 
+descent algorithm is described. This paper also also describes residual neuronal 
+networks. Convolutional model for monocular depth prediction that is based
+on concrete implementation of resiudal neural network, ResNet50, is implemented
+and evaluated. Lastly, the results are presented.
 
-\keywords{Keywords.}
+\keywords{neural networks, convolutional neural networks, residual neural
+networks, ResNet, monocular depth estimation}
 \end{abstract}
 
 \end{document}

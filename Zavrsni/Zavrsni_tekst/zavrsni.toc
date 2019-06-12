@@ -18,5 +18,5 @@
 \contentsline {section}{\numberline {4.3}Priprema podataka}{19}{section.4.3}
 \contentsline {section}{\numberline {4.4}Arhitektura modela}{20}{section.4.4}
 \contentsline {chapter}{\numberline {5}Rezultati}{23}{chapter.5}
-\contentsline {chapter}{\numberline {6}Zaklju\IeC {\v c}ak}{24}{chapter.6}
-\contentsline {chapter}{Literatura}{25}{chapter*.19}
+\contentsline {chapter}{\numberline {6}Zaklju\IeC {\v c}ak}{26}{chapter.6}
+\contentsline {chapter}{Literatura}{27}{chapter*.20}
